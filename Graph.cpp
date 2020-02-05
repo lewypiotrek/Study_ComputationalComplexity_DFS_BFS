@@ -1,6 +1,4 @@
 #include "Graph.h"
-//#define N 10
-
 
 Graph::Graph(int V)
 {
@@ -22,7 +20,6 @@ Graph::~Graph()
 void Graph::InsertGraphByFile(string FileName)
 {
 	fstream file;
-
 	file.open(FileName, ios::in);
 
 	if (file.good())
@@ -45,57 +42,75 @@ void Graph::InsertGraphByFile(string FileName)
 
 		// Close file 
 		file.close();
+
+		cout << "\t Graph has been inserted by file " << FileName;
+		cout << "\n\t-------------------------------------------\n";
 	}
 	else
 	{
 		cout << "ERROR: Cannot open file " << FileName << " ...\n";
 	}
-
-
 }
 
 void Graph::GenerateRandomGraph(int e, const int N)
 {
+	fstream file;
 
 	int ** edge = new int * [e];
-
 	for (int i = 0; i < e; i++)
 		edge[i] = new int[2];
 
 	int i, j, count;
 	i = 0;
-	// generate a connection between two random numbers, for //sample a small case, limit the number of vertex to 10.
+
 	while (i < e) {
 		edge[i][0] = rand() % N + 1;
 		edge[i][1] = rand() % N + 1;
 		i++;
 	}
-	//Print all the connection of each vertex, irrespective of the //direction.
-	cout << "\nThe generated random graph is: ";
+	
+	file.open("RandomGraph", ios::out);
+	
+	file << N << " ";
+	file << e;
+
 	for (i = 0; i < N; i++) {
+		
 		count = 0;
-		cout << "\n\t" << i + 1 << " ";
+
+		file << "\n"<< i + 1 << " ";
+
 		for (j = 0; j < e; j++) {
 			if (edge[j][0] == i + 1) {
-				cout << edge[j][1] << " ";
+				file << edge[j][1] << " ";
 				count++;
 			}
 			else if (edge[j][1] == i + 1) {
-				cout << edge[j][0] << " ";
+				file << edge[j][0] << " ";
 				count++;
 			}
 			else if (j == e - 1 && count == 0)
-				cout << " ";
+				file << " ";
 		}
 	}
 
+	cout << "\t Graph has been generated";
+	cout << "\n\t-------------------------------------------\n";
+
+	// close file
+	file.close();
+
+	// clear memory 
+	for (int i = 0; i < e; i++)
+		delete[] edge[i];
+
+	delete[] edge;
 }
 
 void Graph::addEdge(int v, int w)
 {
 	adj[v].push_back(w); // Add w to v’s list. 
 }
-
 
 void Graph::BFS(int s)
 {
@@ -139,8 +154,7 @@ void Graph::BFS(int s)
 
 void Graph::DFSUtil(int v, bool visited[])
 {
-	// Mark the current node as visited and 
-	// print it 
+	// Mark the current node as visited 
 	visited[v] = true;
 	cout << v << " ";
 
@@ -152,8 +166,6 @@ void Graph::DFSUtil(int v, bool visited[])
 			DFSUtil(*i, visited);
 }
 
-// DFS traversal of the vertices reachable from v. 
-// It uses recursive DFSUtil() 
 void Graph::DFS(int v)
 {
 	// Mark all the vertices as not visited 
