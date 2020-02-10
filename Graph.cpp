@@ -8,8 +8,7 @@ Graph::Graph(int V)
 
 Graph::Graph()
 {
-	this->V = V;
-	adj = new list<int>[V];
+	this->V = 0;
 }
 
 Graph::~Graph()
@@ -17,22 +16,27 @@ Graph::~Graph()
 	//delete adj;
 }
 
+//	UTILITIES
 void Graph::InsertGraphByFile(string FileName)
 {
+	cout << "Inserting Graph by file. Please wait...\n\n";
+	// Preparing file for reading
 	fstream file;
 	file.open(FileName, ios::in);
 
 	if (file.good())
 	{
-		// read number of edges = v and read numbers of connections C
+		// Insert no. of verticals 
 		file >> this->V;
-		file >> this->C;
-
-		this->V = V;
 		adj = new list<int>[V];
 
+		// insert no. of connections
+		file >> this->C;
+
+		// additional variable for inserting edges
 		int n1, n2;
 
+		// inserting a pair of verticals
 		for (int i = 0; i < C; i++)
 		{
 			file >> n1;
@@ -40,11 +44,10 @@ void Graph::InsertGraphByFile(string FileName)
 			addEdge(n1, n2);
 		}
 
-		// Close file 
 		file.close();
 
 		cout << "\t Graph has been inserted by file " << FileName;
-		cout << "\n\t-------------------------------------------\n";
+		cout << "\n\t-------------------------------------------\n\n";
 	}
 	else
 	{
@@ -54,48 +57,56 @@ void Graph::InsertGraphByFile(string FileName)
 
 void Graph::GenerateRandomGraph(int e, const int N)
 {
+	cout << "Generating random graph. Please wait...\n\n";
 	fstream file;
 
 	int ** edge = new int * [e];
 	for (int i = 0; i < e; i++)
 		edge[i] = new int[2];
 
-	int i, j, count;
+	int i, j, count, rows = 0;
 	i = 0;
 
 	while (i < e) {
-		edge[i][0] = rand() % N + 1;
-		edge[i][1] = rand() % N + 1;
+		edge[i][0] = rand() % N;
+		edge[i][1] = rand() % N;
 		i++;
 	}
 	
 	file.open("RandomGraph", ios::out);
 	
 	file << N << " ";
-	file << e;
+	file << e << "\n";
 
 	for (i = 0; i < N; i++) {
 		
 		count = 0;
 
-		file << "\n"<< i + 1 << " ";
+		//file << "\n"<< i + 1 << " ";
 
 		for (j = 0; j < e; j++) {
-			if (edge[j][0] == i + 1) {
-				file << edge[j][1] << " ";
+			if (edge[j][0] == i) {
+				file << i << " ";
+				file << edge[j][1] << "\n";
 				count++;
+				rows++;
 			}
-			else if (edge[j][1] == i + 1) {
-				file << edge[j][0] << " ";
+			else if (edge[j][1] == i) {
+				file << i << " ";
+				file << edge[j][0] << "\n";
 				count++;
+				rows++;
 			}
 			else if (j == e - 1 && count == 0)
-				file << " ";
+				file << "";
 		}
 	}
+	file.seekg(0, std::ios::beg);
+	file << e <<" ";
+	file << rows;
 
 	cout << "\t Graph has been generated";
-	cout << "\n\t-------------------------------------------\n";
+	cout << "\n\t-------------------------------------------\n\n";
 
 	// close file
 	file.close();
@@ -112,6 +123,8 @@ void Graph::addEdge(int v, int w)
 	adj[v].push_back(w); // Add w to v’s list. 
 }
 
+
+//	ALGORITHMS
 void Graph::BFS(int s)
 {
 
@@ -135,7 +148,7 @@ void Graph::BFS(int s)
 	{
 		// Dequeue a vertex from queue and print it 
 		s = queue.front();
-		cout << s << " ";
+		//cout << s << " ";
 		queue.pop_front();
 
 		// Get all adjacent vertices of the dequeued 
@@ -156,7 +169,7 @@ void Graph::DFSUtil(int v, bool visited[])
 {
 	// Mark the current node as visited 
 	visited[v] = true;
-	cout << v << " ";
+	//cout << v << " ";
 
 	// Recur for all the vertices adjacent 
 	// to this vertex 

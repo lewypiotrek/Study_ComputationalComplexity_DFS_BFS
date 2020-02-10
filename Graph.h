@@ -4,6 +4,7 @@
 #include<fstream>
 #include <string>
 #include <random>
+#include <time.h>
 
 using namespace std;
 
