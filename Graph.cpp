@@ -4,11 +4,13 @@ Graph::Graph(int V)
 {
 	this->V = V;
 	adj = new list<int>[V];
+	this->isCorrect = true;
 }
 
 Graph::Graph()
 {
 	this->V = 0;
+	this->isCorrect = true;
 }
 
 Graph::~Graph()
@@ -51,6 +53,7 @@ void Graph::InsertGraphByFile(string FileName)
 	}
 	else
 	{
+		isCorrect = false;
 		cout << "ERROR: Cannot open file " << FileName << " ...\n";
 	}
 }
@@ -102,7 +105,7 @@ void Graph::GenerateRandomGraph(int e, const int N)
 		}
 	}
 	file.seekg(0, std::ios::beg);
-	file << e <<" ";
+	//file << e <<" ";
 	file << rows;
 
 	cout << "\t Graph has been generated";
@@ -123,6 +126,11 @@ void Graph::addEdge(int v, int w)
 	adj[v].push_back(w); // Add w to v’s list. 
 }
 
+bool Graph::GetCorrect()
+{
+	return this->isCorrect;
+}
+
 
 //	ALGORITHMS
 void Graph::BFS(int s)
@@ -140,8 +148,6 @@ void Graph::BFS(int s)
 	visited[s] = true;
 	queue.push_back(s);
 
-	// 'i' will be used to get all adjacent 
-	// vertices of a vertex 
 	list<int>::iterator i;
 
 	while (!queue.empty())
@@ -151,9 +157,6 @@ void Graph::BFS(int s)
 		//cout << s << " ";
 		queue.pop_front();
 
-		// Get all adjacent vertices of the dequeued 
-		// vertex s. If a adjacent has not been visited,  
-		// then mark it visited and enqueue it 
 		for (i = adj[s].begin(); i != adj[s].end(); ++i)
 		{
 			if (!visited[*i])
@@ -165,28 +168,31 @@ void Graph::BFS(int s)
 	}
 }
 
-void Graph::DFSUtil(int v, bool visited[])
+// prints all not yet visited vertices reachable from s 
+void Graph::DFS(int s)
 {
-	// Mark the current node as visited 
-	visited[v] = true;
-	//cout << v << " ";
+	// Initially mark all verices as not visited 
+	vector<bool> visited(V, false);
 
-	// Recur for all the vertices adjacent 
-	// to this vertex 
-	list<int>::iterator i;
-	for (i = adj[v].begin(); i != adj[v].end(); ++i)
-		if (!visited[*i])
-			DFSUtil(*i, visited);
-}
+	// Create a stack for DFS 
+	stack<int> stack;
 
-void Graph::DFS(int v)
-{
-	// Mark all the vertices as not visited 
-	bool *visited = new bool[V];
-	for (int i = 0; i < V; i++)
-		visited[i] = false;
+	// Push the current source node. 
+	stack.push(s);
 
-	// Call the recursive helper function 
-	// to print DFS traversal 
-	DFSUtil(v, visited);
+	while (!stack.empty())
+	{
+		s = stack.top();
+		stack.pop();
+
+		if (!visited[s])
+		{
+			cout << s << " ";
+			visited[s] = true;
+		}
+
+		for (auto i = adj[s].begin(); i != adj[s].end(); ++i)
+			if (!visited[*i])
+				stack.push(*i);
+	}
 }
